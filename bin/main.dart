@@ -1,3 +1,5 @@
+import 'dart:io';
+
 // Challenge 1
 // Write test cases for the next challenges and make sure to include boundary conditions
 // DO THIS FIRST
@@ -9,8 +11,36 @@
 // Given the amount the robot has moved each time, you have to calculate the robot's final position.
 // Example
 // trackRobot([20, 30, 10, 40]) ➞ [-10, 10]
-List<int> trackRobot(List<int> movements){
-  return null;
+List<int> trackRobot(List<int> movements) {
+  String direction = "North";
+  List <int> finalPosition = [0, 0];
+
+  if (movements == []) {
+    return [0, 0];
+  }
+  else if(movements != []){
+    for (int i = 0; i < movements.length; i++) {
+      if (direction == "North") {
+        finalPosition[1] = finalPosition[1] + movements[i];
+        direction = "East";
+      }
+      else if (direction == "East") {
+        finalPosition[0] = finalPosition[0] + movements[i];
+        direction = "South";
+      }
+
+      else if (direction == "South") {
+        finalPosition[1] = finalPosition[1] - movements[i];
+        direction = "West";
+      }
+
+      else if (direction == "West") {
+        finalPosition[0] = finalPosition[0] - movements[i];
+        direction = "North";
+      }
+  }
+}
+  return finalPosition;
 }
 
 // Challenge 3
@@ -37,4 +67,46 @@ List<Map> products = [
   { 'number': 9, 'price': 80,  'name': 'Small snack' },
 ];
 
-main() {}
+Map <String, dynamic> vendingMachine(int productNumber, int amount){
+  Map product = searchForProduct(productNumber);
+  if(product == null){
+    print("Invalid Product");
+    return null;
+  }
+
+  int productValue = product["price"];
+  String productName = product["name"];
+  int changeValue = amount - productValue;
+  if(changeValue < 0){
+    print("Insufficient Money");
+    return null;
+  }
+
+
+  List <int> coins = [100, 50, 20, 10, 5];
+  List<int> returnChange = [];
+  coins.forEach((coin) {
+    int coinCount = changeValue ~/ coin;
+    changeValue = changeValue % coin;
+    returnChange.addAll((List.generate(coinCount,(index)=> coin )));
+
+  });
+
+  return {'product': productName,'change': returnChange};
+}
+
+Map searchForProduct(int productNumber){
+  Map result;
+  products.forEach((productMap){
+    if(productMap.containsValue(productNumber)){
+      result =productMap;
+    }
+  });
+  return result;
+}
+
+main() {
+  print(trackRobot([20, 30, 10, 40, ]));
+  print(vendingMachine(4, 200));
+  print(vendingMachine(1, 200));
+}
